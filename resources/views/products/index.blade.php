@@ -121,7 +121,7 @@
                                     @foreach ($products as $index => $product)
                                         <tr class="hover:bg-gray-50/50 transition-colors duration-150">
                                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-500">
-                                                {{ $index + 1 }}
+                                                {{ ($products->currentPage() - 1) * $products->perPage() + $index + 1 }}
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
                                                 <div class="text-sm font-semibold text-gray-900">{{ $product->name }}</div>
@@ -174,6 +174,11 @@
                                     @endforeach
                                 </tbody>
                             </table>
+                        </div>
+                        
+                        <!-- Pagination Links -->
+                        <div class="mt-6">
+                            {{ $products->links() }}
                         </div>
                     @endif
                 </div>
