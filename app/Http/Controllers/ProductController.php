@@ -9,12 +9,24 @@ use App\Models\Category;
 
 class ProductController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        // For now, fetch all products. Eager load categories to optimize queries.
-        // We will add search and pagination in subsequent tasks.
-        $products = Product::with('category')->latest()->get();
-        return view('products.index', compact('products'));
+        $query = Product::with('category');
+
+        // Search by name
+        if ($request->filled('search')) {
+            $query->where('name', 'like', '%' . $request->search . '%');
+        }
+
+        // Filter by category
+        if ($request->filled('category_id')) {
+            $query->where('category_id', $request->category_id);
+        }
+
+        $products = $query->latest()->get();
+        $categories = Category::orderBy('name')->get();
+
+        return view('products.index', compact('products', 'categories'));
     }
 
     public function create()

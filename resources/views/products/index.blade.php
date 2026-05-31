@@ -32,6 +32,45 @@
             <!-- Table Container -->
             <div class="bg-white/80 backdrop-blur-md overflow-hidden shadow-sm border border-gray-100 sm:rounded-2xl">
                 <div class="p-6">
+                    <!-- Search & Filter Form -->
+                    <form action="{{ route('products.index') }}" method="GET" class="mb-6 bg-gray-50/50 p-4 rounded-xl border border-gray-100">
+                        <div class="flex flex-col md:flex-row md:items-center gap-4">
+                            <!-- Search Input -->
+                            <div class="flex-1 relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                    </svg>
+                                </div>
+                                <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari barang berdasarkan nama..." class="w-full pl-10 pr-4 py-2 text-sm border-gray-200 focus:border-indigo-500 focus:ring-indigo-200 rounded-lg transition duration-200 focus:ring-4">
+                            </div>
+
+                            <!-- Category Filter Dropdown -->
+                            <div class="w-full md:w-48">
+                                <select name="category_id" class="w-full py-2 text-sm border-gray-200 focus:border-indigo-500 focus:ring-indigo-200 rounded-lg transition duration-200 focus:ring-4">
+                                    <option value="">Semua Kategori</option>
+                                    @foreach ($categories as $category)
+                                        <option value="{{ $category->id }}" @selected(request('category_id') == $category->id)>
+                                            {{ $category->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="flex items-center space-x-2">
+                                <button type="submit" class="w-full md:w-auto px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-semibold shadow transition duration-150 ease-in-out">
+                                    Cari
+                                </button>
+                                @if (request()->filled('search') || request()->filled('category_id'))
+                                    <a href="{{ route('products.index') }}" class="w-full md:w-auto px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg text-sm font-semibold text-center transition duration-150 ease-in-out">
+                                        Reset
+                                    </a>
+                                @endif
+                            </div>
+                        </div>
+                    </form>
+
                     @if ($products->isEmpty())
                         <div class="text-center py-12">
                             <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-400">
@@ -39,11 +78,19 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
                                 </svg>
                             </div>
-                            <h3 class="text-lg font-medium text-gray-900 mb-1">Belum ada barang</h3>
-                            <p class="text-gray-500 mb-6">Mulai dengan menambahkan barang baru ke dalam sistem.</p>
-                            <a href="{{ route('products.create') }}" class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-lg font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 transition ease-in-out duration-150">
-                                Tambah Barang
-                            </a>
+                            @if (request()->filled('search') || request()->filled('category_id'))
+                                <h3 class="text-lg font-medium text-gray-900 mb-1">Hasil pencarian tidak ditemukan</h3>
+                                <p class="text-gray-500 mb-6 font-semibold">Tidak ada barang yang cocok dengan kata kunci atau filter pencarian Anda.</p>
+                                <a href="{{ route('products.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg text-sm font-semibold transition ease-in-out duration-150">
+                                    Bersihkan Pencarian
+                                </a>
+                            @else
+                                <h3 class="text-lg font-medium text-gray-900 mb-1">Belum ada barang</h3>
+                                <p class="text-gray-500 mb-6">Mulai dengan menambahkan barang baru ke dalam sistem.</p>
+                                <a href="{{ route('products.create') }}" class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-lg font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 transition ease-in-out duration-150">
+                                    Tambah Barang
+                                </a>
+                            @endif
                         </div>
                     @else
                         <div class="overflow-x-auto rounded-xl border border-gray-100">
